@@ -1,4 +1,7 @@
+import subprocess
+import tempfile
 import unittest
+from pathlib import Path
 
 import support  # noqa: F401
 import registry as reg
@@ -20,6 +23,37 @@ class IdentityTests(unittest.TestCase):
 
     def test_plain_name_is_lowercased_and_trimmed(self):
         self.assertEqual(reg.normalise_identity("  Acme Docs "), "acme docs")
+
+
+class IdentifyTests(unittest.TestCase):
+    def repo(self, tmp):
+        root = Path(tmp) / "checkout"
+        (root / "docs").mkdir(parents=True)
+        subprocess.run(["git", "init", "-q", str(root)], check=True)
+        subprocess.run(["git", "-C", str(root), "remote", "add", "origin",
+                        "https://github.com/Acme/Product.git"], check=True)
+        return root
+
+    def test_repository_root_is_identified_by_its_remote(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertEqual(reg.identify(str(self.repo(tmp))), "github.com/acme/product")
+
+    def test_subfolder_of_a_repository_is_identified_by_remote_and_subpath(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self.repo(tmp)
+            self.assertEqual(reg.identify(str(root / "docs")), "github.com/acme/product/docs")
+
+    def test_folder_outside_any_repository_is_identified_by_its_name(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp) / "Vendor Docs"
+            folder.mkdir()
+            self.assertEqual(reg.identify(str(folder)), "vendor docs")
+
+    def test_url_list_file_is_identified_by_the_origin_of_its_first_url(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            listing = Path(tmp) / "urls.txt"
+            listing.write_text("\nhttps://docs.example.com/start\n", encoding="utf-8")
+            self.assertEqual(reg.identify(str(listing)), "docs.example.com")
 
 
 class SeenTests(unittest.TestCase):

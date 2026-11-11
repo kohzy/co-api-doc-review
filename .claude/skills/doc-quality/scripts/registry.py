@@ -49,7 +49,11 @@ def identify(source):
         remote = subprocess.run(["git", "-C", str(path), "remote", "get-url", "origin"],
                                 capture_output=True, text=True)
         if remote.returncode == 0 and remote.stdout.strip():
-            return normalise_identity(remote.stdout.strip())
+            identity = normalise_identity(remote.stdout.strip())
+            top = subprocess.run(["git", "-C", str(path), "rev-parse", "--show-toplevel"],
+                                 capture_output=True, text=True).stdout.strip()
+            subpath = path.resolve().relative_to(Path(top).resolve()).as_posix() if top else "."
+            return identity if subpath == "." else f"{identity}/{subpath.lower()}"
         return normalise_identity(path.resolve().name)
     if path.is_file():
         for line in path.read_text(encoding="utf-8").splitlines():

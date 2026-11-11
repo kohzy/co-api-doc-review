@@ -34,6 +34,12 @@ def _ac1(vote_lists):
     return (observed - chance) / (1 - chance)
 
 
+def _criterion_order(criterion_id):
+    """Sort C2 before C10."""
+    digits = "".join(ch for ch in criterion_id if ch.isdigit())
+    return (int(digits) if digits else 0, criterion_id)
+
+
 def _majority(votes):
     counts = Counter(votes)
     for category in CATEGORIES:
@@ -68,7 +74,7 @@ def summarise(valid_verdicts):
         })
 
     criteria = {}
-    for criterion in sorted({u["criterion"] for u in units}):
+    for criterion in sorted({u["criterion"] for u in units}, key=_criterion_order):
         own = [u for u in units if u["criterion"] == criterion]
         decided = [u for u in own if u["majority"]]
         tested = sum(1 for u in own if len(u["votes"]) >= 2) >= 2
@@ -301,8 +307,11 @@ def main(argv=None):
         rubric = read_json(rubric_dir / "rubric.json")
         items = read_json(run / "items.json")["items"]
         confirmed_path = run / "failures-confirmed.json"
+        scores_path = run / "user-scores.json"
+        no_scores = {group: {"agree": 0, "total": 0} for group in ("unanimous", "contested")}
         decision = decide_held_out(
-            read_json(run / "summary.json"), read_json(run / "user-scores.json"),
+            read_json(run / "summary.json"),
+            read_json(scores_path) if scores_path.exists() else no_scores,
             read_json(confirmed_path) if confirmed_path.exists() else {},
             read_json(rubric_dir / "config.json"),
             active_criteria=[c["id"] for c in rubric["criteria"] if c["status"] == "active"])
