@@ -1,5 +1,5 @@
 {
-  "thresholds_confirmed": false,
+  "thresholds_confirmed": true,
   "evaluators": 3,
   "refine_sample": 12,
   "held_out_sample": 20,
