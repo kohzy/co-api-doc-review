@@ -1,0 +1,81 @@
+## Documentation Index
+
+Fetch the complete documentation index at: /llms.txt
+
+Use this file to discover all available pages before exploring further.
+
+Skip to main content
+
+Mangrove Documentation home page
+
+Search...
+
+⌘K
+
+Search...
+
+Navigation
+
+Getting Started
+
+Authentication
+
+Getting Started
+
+# Authentication
+
+Authenticating with the Mangrove API.
+
+For secure access to protected resources, requests to the Mangrove API need to be authenticated in order to identify the requesting party and their role.
+
+##
+
+​
+
+Prerequisites
+
+To connect to the API, make sure you have the following prerequisites in place:
+
+- An API token. Open Account Admin → API, click New Token, and give it a name, a user, an expiration, and its permissions. The token stays readable on that page afterwards, so you can copy it again later.
+
+- The permissions the endpoints you are calling need. Permissions are granted by area, each with a read and a write tick box: Data Collection, Accounting and Reporting, Credit Inventory, Account Admin, Data Rules, and Compliance Calendar. Ticking an area grants the project read access it depends on. A token without the permission an endpoint needs gets a 403 Forbidden.
+
+##
+
+​
+
+Token expiry
+
+Every new token gets an expiration. The dropdown offers 30 days, 60 days, 90 days, 180 days, 1 year, and No expiration, and defaults to 90 days. A token’s expiry cannot be changed after it is created. To move one out, create a replacement, switch your integration over, and delete the old token. The Expires column on the API page is where you check. Within 14 days of expiry the date is highlighted and reads Expires soon. That highlight is the only warning, and only on that page, so put your own reminder in before a token running a production integration comes due.
+
+A No expiration token never lapses and has to be rotated by hand. Prefer a dated token for anything you can rotate on a schedule.
+
+Tokens created before expiry dates were introduced have none, and keep working.
+
+##
+
+​
+
+Making Authenticated API Requests
+
+Include the token in the Authorization header of your HTTP request. Pass the raw token, with or without a Bearer prefix:
+
+Authorization: YOUR_API_TOKEN
+
+##
+
+​
+
+Error Handling
+
+An expired token returns 401 with a body naming the reason:
+
+{
+  "errors": [
+    { "message": "API token has expired" }
+  ]
+}
+
+A token Mangrove does not recognise also returns 401, with no body at all. Treat an empty 401 as a wrong or deleted token, and a 401 carrying that message as one that needs replacing. A 403 means the token is valid and lacks the permission the endpoint needs. See Status Codes for the full error format.
+
+⌘I

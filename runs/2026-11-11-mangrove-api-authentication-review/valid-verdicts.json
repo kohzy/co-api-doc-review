@@ -1,0 +1,122 @@
+[
+  {
+    "item": "p001",
+    "criterion": "C1",
+    "verdict": "pass",
+    "evidence": {
+      "quote": "The dropdown offers 30 days, 60 days, 90 days, 180 days, 1 year, and No expiration, and defaults to 90 days."
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C2",
+    "verdict": "pass",
+    "evidence": {
+      "quote": "For secure access to protected resources, requests to the Mangrove API need to be authenticated in order to identify the requesting party and their role."
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C6",
+    "verdict": "pass",
+    "evidence": {
+      "quote": "Permissions are granted by area, each with a read and a write tick box: Data Collection, Accounting and Reporting, Credit Inventory, Account Admin, Data Rules, and Compliance Calendar."
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C7",
+    "verdict": "pass",
+    "evidence": {
+      "quote": "Making Authenticated API Requests"
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C9",
+    "verdict": "fail",
+    "evidence": {
+      "quote": "Ticking an area grants the project read access it depends on."
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C12",
+    "verdict": "pass",
+    "evidence": {
+      "quote": "Authorization: YOUR_API_TOKEN"
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C13",
+    "verdict": "pass",
+    "evidence": {
+      "quote": "See Status Codes for the full error format."
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C14",
+    "verdict": "pass",
+    "evidence": {
+      "quote": "Treat an empty 401 as a wrong or deleted token, and a 401 carrying that message as one that needs replacing."
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C17",
+    "verdict": "fail",
+    "evidence": {
+      "quote": "Ticking an area grants the project read access it depends on."
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C18",
+    "verdict": "fail",
+    "evidence": {
+      "quote": "Every new token gets an expiration. The dropdown offers 30 days, 60 days, 90 days, 180 days, 1 year, and No expiration, and defaults to 90 days. A token’s expiry cannot be changed after it is created."
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C20",
+    "verdict": "fail",
+    "evidence": {
+      "quote": "To connect to the API, make sure you have the following prerequisites in place:"
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C21",
+    "verdict": "fail",
+    "evidence": {
+      "quote": "Ticking an area grants the project read access it depends on."
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C22",
+    "verdict": "pass",
+    "evidence": {
+      "absent": {
+        "looked_for": "product or domain abbreviations used without expansion",
+        "searched": "the whole page; the only abbreviations found are API and HTTP, which are common for the audience"
+      }
+    },
+    "evaluator": "batch1"
+  }
+]
