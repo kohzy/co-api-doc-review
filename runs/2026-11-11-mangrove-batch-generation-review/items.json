@@ -1,0 +1,36 @@
+{
+  "seed": 2903,
+  "found": {
+    "prose": 1
+  },
+  "items": [
+    {
+      "id": "p001",
+      "kind": "prose",
+      "page_type": "how-to",
+      "source": "https://docs.mangrovesystems.com/api-reference/cookbooks/batch-generation",
+      "snapshot": "pages/p001.txt",
+      "criteria": [
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "C7",
+        "C9",
+        "C10",
+        "C11",
+        "C12",
+        "C13",
+        "C14",
+        "C17",
+        "C18",
+        "C19",
+        "C20",
+        "C21",
+        "C22"
+      ]
+    }
+  ],
+  "rubric_version": 1
+}

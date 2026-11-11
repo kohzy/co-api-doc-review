@@ -1,0 +1,155 @@
+{
+ "evaluator": "batch1",
+ "verdicts": [
+  {
+   "item": "p001",
+   "criterion": "C1",
+   "verdict": "pass",
+   "evidence": {
+    "quote": "This cookbook walks through the full workflow: checking what inputs are needed, previewing the results, and triggering generation."
+   }
+  },
+  {
+   "item": "p001",
+   "criterion": "C2",
+   "verdict": "pass",
+   "evidence": {
+    "quote": "Use the Mangrove API to check required inputs, preview batch generation, and trigger batch creation for a ledger."
+   }
+  },
+  {
+   "item": "p001",
+   "criterion": "C3",
+   "verdict": "pass",
+   "evidence": {
+    "quote": "Before you begin, make sure you have the following:"
+   }
+  },
+  {
+   "item": "p001",
+   "criterion": "C4",
+   "verdict": "pass",
+   "evidence": {
+    "quote": "Once the task completes, list the batches on the ledger to confirm they were created."
+   }
+  },
+  {
+   "item": "p001",
+   "criterion": "C5",
+   "verdict": "pass",
+   "evidence": {
+    "quote": "Once the task completes, list the batches on the ledger to confirm they were created."
+   }
+  },
+  {
+   "item": "p001",
+   "criterion": "C7",
+   "verdict": "pass",
+   "evidence": {
+    "quote": "Poll for task completion"
+   }
+  },
+  {
+   "item": "p001",
+   "criterion": "C9",
+   "verdict": "fail",
+   "evidence": {
+    "quote": "Batch generation is the process of running a model against collected data to produce batches on a ledger."
+   }
+  },
+  {
+   "item": "p001",
+   "criterion": "C10",
+   "verdict": "pass",
+   "evidence": {
+    "quote": "Save the ledger id (e.g., lgr_abc123def456). Confirm latest_model is not null."
+   }
+  },
+  {
+   "item": "p001",
+   "criterion": "C11",
+   "verdict": "pass",
+   "evidence": {
+    "quote": "Response (202 Accepted)"
+   }
+  },
+  {
+   "item": "p001",
+   "criterion": "C12",
+   "verdict": "pass",
+   "evidence": {
+    "quote": "Save the ledger id (e.g., lgr_abc123def456)."
+   }
+  },
+  {
+   "item": "p001",
+   "criterion": "C13",
+   "verdict": "pass",
+   "evidence": {
+    "quote": "You can check this via GET /ledgers and looking for the latest_model field."
+   }
+  },
+  {
+   "item": "p001",
+   "criterion": "C14",
+   "verdict": "fail",
+   "evidence": {
+    "quote": "failedTask encountered an error: check error_message"
+   }
+  },
+  {
+   "item": "p001",
+   "criterion": "C17",
+   "verdict": "fail",
+   "evidence": {
+    "quote": "The full amount is drawn either way, so running fewer partitions gives each a larger share rather than drawing less from the source batch."
+   }
+  },
+  {
+   "item": "p001",
+   "criterion": "C18",
+   "verdict": "fail",
+   "evidence": {
+    "quote": "Use the Mangrove API to check required inputs, preview batch generation, and trigger batch creation for a ledger."
+   }
+  },
+  {
+   "item": "p001",
+   "criterion": "C19",
+   "verdict": "pass",
+   "evidence": {
+    "quote": "List your ledgers and identify the one you want to generate batches for."
+   }
+  },
+  {
+   "item": "p001",
+   "criterion": "C20",
+   "verdict": "fail",
+   "evidence": {
+    "quote": "This cookbook walks through the full workflow: checking what inputs are needed, previewing the results, and triggering generation."
+   }
+  },
+  {
+   "item": "p001",
+   "criterion": "C21",
+   "verdict": "pass",
+   "evidence": {
+    "absent": {
+     "looked_for": "an it, this, that or they whose referent is unclear or could be more than one noun",
+     "searched": "every sentence of the intro, the seven steps, the optional-parameter list and the Async task states section; each 'this' and 'it' (e.g. 'You can check this via', 'This is an async operation', 'Set it to true') follows the noun it refers to"
+    }
+   }
+  },
+  {
+   "item": "p001",
+   "criterion": "C22",
+   "verdict": "pass",
+   "evidence": {
+    "absent": {
+     "looked_for": "product or domain abbreviations used without expansion",
+     "searched": "the whole page: intro, scenario, all seven steps, optional parameters and the Async task states section; only common ones appear (API, ID, Q1, e.g., async)"
+    }
+   }
+  }
+ ]
+}
