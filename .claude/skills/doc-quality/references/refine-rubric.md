@@ -34,7 +34,7 @@ If one fails to write its file, spawn it once more with the same prompt. If it f
 python3 S/agreement.py summarise RUN
 ```
 
-This checks every quote against its snapshot, sets invalid verdicts aside, and prints agreement and pass rate per criterion, with the count of verdicts set aside per evaluator.
+This checks every quote against its snapshot, sets invalid verdicts aside, and prints agreement and pass rate per criterion, with the count of verdicts set aside per evaluator. A page-and-criterion pair that one evaluator skipped or had set aside is flagged as not judged by every evaluator; it counts as neither unanimous nor contested and is left out of the spot-checks.
 
 Tell the user the overall agreement and how many verdicts were set aside, from which evaluator. **Hold the per-criterion table back until the spot-checks in step 5 are done.** A pass rate of 95% on a criterion tells the user what the evaluators thought before they have judged it themselves.
 

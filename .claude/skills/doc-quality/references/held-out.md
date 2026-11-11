@@ -16,6 +16,14 @@ Stop at the first check that fails, and tell the user why.
 
 Follow steps 1 to 4 of `refine-rubric.md` unchanged, with one difference: sample `held_out_sample` pages, not `refine_sample`.
 
+As soon as the evaluators have run, record the doc set as seen:
+
+```
+python3 S/registry.py record-use <doc-set> --mode held-out --date <YYYY-MM-DD> --run RUN
+```
+
+Do this now, not at the end. From this point the rubric has been run on these docs, and a test abandoned during the spot-checks must not leave them available to be tested again.
+
 ## 3. Blind spot-checks
 
 Follow step 5 of `refine-rubric.md` unchanged, including never opening the sealed file yourself.
@@ -37,7 +45,6 @@ Write the answers to `RUN/failures-confirmed.json` as `{"C3": true, "C17": false
 ```
 python3 S/agreement.py decide RUN
 python3 S/registry.py record-held-out <doc-set> --date <YYYY-MM-DD> --run RUN
-python3 S/registry.py record-use <doc-set> --mode held-out --date <YYYY-MM-DD> --run RUN
 ```
 
 `decide` prints passed or not passed with every reason. Criteria the sample could not exercise are listed as not tested; they do not block a pass, and review reports will say so.

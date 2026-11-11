@@ -52,8 +52,11 @@ def summarise(valid_verdicts):
     """Agreement and pass rate per criterion, overall agreement, and every judged unit.
 
     A unit is one criterion judged on one item. Its majority is at least two
-    identical verdicts; a unit without one is marked no-majority.
+    identical verdicts; a unit without one is marked no-majority. A unit is
+    unanimous only when every evaluator in the run gave the same valid verdict,
+    so a unit one evaluator skipped or got set aside is never treated as settled.
     """
+    evaluators = {verdict["evaluator"] for verdict in valid_verdicts}
     grouped = defaultdict(list)
     for verdict in valid_verdicts:
         grouped[(verdict["item"], verdict["criterion"])].append(verdict)
@@ -61,14 +64,17 @@ def summarise(valid_verdicts):
     units = []
     for (item, criterion), verdicts in sorted(grouped.items()):
         votes = [v["verdict"] for v in verdicts]
-        unanimous = len(votes) >= 2 and len(set(votes)) == 1
+        majority = _majority(votes)
+        complete = len(votes) == len(evaluators)
+        unanimous = complete and len(votes) >= 2 and len(set(votes)) == 1
         units.append({
             "item": item,
             "criterion": criterion,
             "votes": votes,
-            "majority": _majority(votes),
+            "majority": majority,
+            "complete": complete,
             "unanimous": unanimous,
-            "contested": not unanimous,
+            "contested": len(set(votes)) > 1 or majority is None,
             "verdicts": [{"evaluator": v["evaluator"], "verdict": v["verdict"],
                           "evidence": v["evidence"]} for v in verdicts],
         })
@@ -86,6 +92,7 @@ def summarise(valid_verdicts):
             "pass_rate": (sum(1 for u in decided if u["majority"] == "pass") / len(decided)
                           if decided else None),
             "no_majority": len(own) - len(decided),
+            "incomplete": sum(1 for u in own if not u["complete"]),
             "never_fails": tested and not any(u["majority"] == "fail" for u in own),
         }
     return {
@@ -279,6 +286,8 @@ def main(argv=None):
                 flags.append("never fails")
             if c["no_majority"]:
                 flags.append(f"{c['no_majority']} without a majority")
+            if c["incomplete"]:
+                flags.append(f"{c['incomplete']} not judged by every evaluator")
             print(f"  {cid}: AC1 {_format(c['ac1'])}, pass rate {_format(c['pass_rate'], '{:.0%}')}, "
                   f"{c['items']} items" + (f" ({'; '.join(flags)})" if flags else ""))
     elif args.command == "spot-check":

@@ -295,5 +295,28 @@ class HeldOutCommandTests(unittest.TestCase):
         self.assertEqual(result["input_kinds"], ["prose"])
 
 
+class IncompleteUnitTests(unittest.TestCase):
+    """A unit one evaluator did not judge is neither unanimous nor contested."""
+
+    def summary(self):
+        return ag.summarise(units("U1", ["PP-", "PPP", "FFF", "PPP"]))
+
+    def test_two_matching_votes_out_of_three_evaluators_is_not_unanimous(self):
+        unit = next(u for u in self.summary()["units"] if u["item"] == "p001")
+        self.assertFalse(unit["unanimous"])
+        self.assertFalse(unit["contested"])
+        self.assertEqual(unit["majority"], "pass")
+
+    def test_incomplete_units_are_counted_per_criterion(self):
+        u1 = self.summary()["criteria"]["U1"]
+        self.assertEqual(u1["incomplete"], 1)
+        self.assertAlmostEqual(u1["unanimous_share"], 0.75)
+
+    def test_incomplete_unit_never_enters_the_spot_check_set(self):
+        for seed in range(5):
+            items, _, _ = ag.select_spot_checks(self.summary(), RUBRIC, CONFIG, seed=seed)
+            self.assertNotIn("p001", [item["item"] for item in items])
+
+
 if __name__ == "__main__":
     unittest.main()
