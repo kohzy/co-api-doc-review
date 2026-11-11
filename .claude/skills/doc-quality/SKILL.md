@@ -20,7 +20,7 @@ There are two modes. They share the rubric and nothing else.
 
 - **Never edit, move or delete anything in the documentation being evaluated.** Write only under `runs/` and, in `refine-rubric`, under `rubric/`.
 - **Never change `rubric/rubric.json` or `rubric/RUBRIC.md` by hand.** The rubric changes only through `rubric_store.py apply`, and only with changes the user accepted in this run.
-- **Evaluators are subagents with fresh contexts.** If you cannot spawn subagents, stop and say so. Evaluators that share your context are not independent, and their agreement would mean nothing.
+- **Evaluators are subagents with fresh contexts.** Spawn each as a general-purpose subagent that starts from its prompt alone, never as a fork that inherits this conversation. Give every path in its prompt as an absolute path. If you cannot spawn subagents, stop and say so. Evaluators that share your context are not independent, and their agreement would mean nothing.
 - **Do not judge pages yourself and do not repair an evaluator's verdicts.** Verdicts that fail validation are set aside and counted, as the scripts report.
 - **Do not fetch pages with a web-fetch tool.** It returns a model's rendering of the page. `discover.py urls` saves the real text.
 
@@ -32,7 +32,8 @@ Run every command from the root of the repository that holds `rubric/`. The scri
 2. Confirm the rubric is sound: `python3 .claude/skills/doc-quality/scripts/rubric_store.py validate`. Stop if it reports a problem.
 3. Create the run directory `runs/<YYYY-MM-DD>-<doc-set-name>-<mode>/`, where the mode is `refine-rubric`, `held-out` or `review`. If it exists, add `-2`, `-3` and so on.
 4. Read `rubric/config.json` for sample sizes, the batch size and the thresholds.
-5. Follow the reference for the mode, in full:
+5. Pick a seed for the run: any integer. Say what it is, and use it wherever a command takes `--seed`.
+6. Follow the reference for the mode, in full:
    - `refine-rubric` without `held-out`: `references/refine-rubric.md`
    - `refine-rubric` with `held-out`: `references/held-out.md`
    - `review`: `references/review.md`

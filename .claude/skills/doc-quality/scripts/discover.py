@@ -7,6 +7,7 @@ Every item gets a snapshot: the text evaluators read and quotes are checked
 against. Local files are their own snapshot. URLs are fetched once and saved.
 """
 import argparse
+import os
 import random
 import re
 import shutil
@@ -24,7 +25,9 @@ SOURCE_SUFFIXES = {".py", ".js", ".jsx", ".ts", ".tsx", ".go", ".java", ".rb", "
                    ".cpp", ".cs", ".php", ".swift", ".kt"}
 SKIPPED_DIRS = {".git", ".hg", ".svn", "node_modules", "vendor", "dist", "build", "target",
                 ".venv", "venv", "__pycache__", ".next", ".tox", "site-packages"}
-COMMENT = re.compile(r'"""|\'\'\'|/\*\*|^\s*(#(?!!)|//)\s?\w', re.MULTILINE)
+HASH_COMMENT_SUFFIXES = {".py", ".rb", ".php"}
+HASH_COMMENT = re.compile(r'"""|\'\'\'|^\s*#(?!!)\s?\w', re.MULTILINE)
+SLASH_COMMENT = re.compile(r"/\*\*|^\s*//\s?\w", re.MULTILINE)
 
 PAGE_TYPE_WORDS = (
     ("readme", {"readme"}),
@@ -48,26 +51,51 @@ def guess_page_type(path_text):
     return "other"
 
 
+def _page_name(number):
+    return f"p{number:03d}"
+
+
+def _pages_dir(run_dir):
+    pages = Path(run_dir) / "pages"
+    pages.mkdir(parents=True, exist_ok=True)
+    return pages
+
+
 def _item(number, kind, page_type, source, snapshot):
-    return {"id": f"p{number:03d}", "kind": kind, "page_type": page_type,
+    return {"id": _page_name(number), "kind": kind, "page_type": page_type,
             "source": source, "snapshot": snapshot}
+
+
+def _has_comment(suffix, text):
+    """Whether a source file holds a docstring or comment, by its language's comment style.
+
+    A leading # is a comment only in some languages; in C it is a preprocessor line.
+    """
+    patterns = []
+    if suffix in HASH_COMMENT_SUFFIXES:
+        patterns.append(HASH_COMMENT)
+    if suffix not in (".py", ".rb"):
+        patterns.append(SLASH_COMMENT)
+    return any(pattern.search(text) for pattern in patterns)
 
 
 def discover(root):
     """List prose documentation and commented source files under a folder."""
     root = Path(root).resolve()
     found = []
-    for path in sorted(root.rglob("*")):
+    paths = []
+    for folder, subfolders, names in os.walk(root):
+        subfolders[:] = [name for name in subfolders if name not in SKIPPED_DIRS]
+        paths += [Path(folder) / name for name in names]
+    for path in sorted(paths):
         if not path.is_file():
             continue
         relative = path.relative_to(root)
-        if any(part in SKIPPED_DIRS for part in relative.parts[:-1]):
-            continue
         suffix = path.suffix.lower()
         if suffix in PROSE_SUFFIXES or path.name.lower().startswith("readme"):
             found.append(("prose", guess_page_type(relative.as_posix()), relative, path))
         elif suffix in SOURCE_SUFFIXES:
-            if COMMENT.search(path.read_text(encoding="utf-8", errors="replace")):
+            if _has_comment(suffix, path.read_text(encoding="utf-8", errors="replace")):
                 found.append(("code-comment", "other", relative, path))
     return [_item(n, kind, page_type, relative.as_posix(), str(path))
             for n, (kind, page_type, relative, path) in enumerate(found, start=1)]
@@ -167,16 +195,18 @@ def fetch(url):
 
 def snapshot_urls(urls, run_dir):
     """Fetch each URL once, save its HTML and extracted text, and return the items."""
-    pages = Path(run_dir) / "pages"
-    pages.mkdir(parents=True, exist_ok=True)
+    pages = _pages_dir(run_dir)
     items = []
     for number, url in enumerate(urls, start=1):
-        html = fetch(url)
+        try:
+            html = fetch(url)
+        except OSError as error:
+            raise ValueError(f"could not fetch {url}: {error}") from error
         text = html_to_text(html)
         if not text:
             raise ValueError(f"no text could be extracted from {url}; "
                              "the page may be rendered by JavaScript")
-        name = f"p{number:03d}"
+        name = _page_name(number)
         (pages / f"{name}.html").write_text(html, encoding="utf-8")
         (pages / f"{name}.txt").write_text(text, encoding="utf-8")
         path = urlsplit(url).path or "/"
@@ -199,7 +229,7 @@ def slice_text(text, starts):
     """Cut text into sections beginning at the given 1-based line numbers."""
     if not starts or starts[0] != 1 or any(b <= a for a, b in zip(starts, starts[1:])):
         raise ValueError("section starts must begin at line 1 and strictly increase")
-    lines = text.splitlines(keepends=True)
+    lines = re.findall(r"[^\n]*\n|[^\n]+", text)
     if starts[-1] > len(lines):
         raise ValueError(f"section start {starts[-1]} is past the last line ({len(lines)})")
     bounds = [s - 1 for s in starts] + [len(lines)]
@@ -207,11 +237,10 @@ def slice_text(text, starts):
 
 
 def snapshot_sections(text, starts, run_dir, source):
-    pages = Path(run_dir) / "pages"
-    pages.mkdir(parents=True, exist_ok=True)
+    pages = _pages_dir(run_dir)
     items = []
     for number, section in enumerate(slice_text(text, starts), start=1):
-        name = f"p{number:03d}"
+        name = _page_name(number)
         (pages / f"{name}.txt").write_text(section, encoding="utf-8")
         items.append(_item(number, "pdf-section", "other", f"{source} section {number}",
                            f"pages/{name}.txt"))
@@ -246,12 +275,17 @@ def cap_source_files(items, cap, seed):
     return [item for item in items if item["kind"] != "code-comment" or id(item) in kept]
 
 
-def _write_items(run_dir, items, seed, found):
+def _count_kinds(items):
+    counts = {}
+    for item in items:
+        counts[item["kind"]] = counts.get(item["kind"], 0) + 1
+    return counts
+
+
+def _write_items(run_dir, items, seed, counts):
+    """Write a run's items file; counts says how many items of each kind were found in all."""
     run_dir = Path(run_dir)
     run_dir.mkdir(parents=True, exist_ok=True)
-    counts = {}
-    for item in found:
-        counts[item["kind"]] = counts.get(item["kind"], 0) + 1
     write_json(run_dir / "items.json", {"seed": seed, "found": counts, "items": items})
     kinds = ", ".join(f"{n} {kind}" for kind, n in sorted(counts.items())) or "nothing"
     print(f"found {kinds}; {len(items)} items written to {run_dir / 'items.json'}")
@@ -294,7 +328,7 @@ def main(argv=None):
             items = cap_source_files(items, args.source_cap, args.seed)
         if args.sample is not None:
             items = sample(items, args.sample, args.seed)
-        _write_items(args.run, items, args.seed, found)
+        _write_items(args.run, items, args.seed, _count_kinds(found))
     elif args.command == "urls":
         urls = read_url_list(Path(args.path).read_text(encoding="utf-8"))
         if not urls:
@@ -304,21 +338,28 @@ def main(argv=None):
         if args.sample is not None and len(urls) > args.sample:
             picked = set(random.Random(args.seed).sample(range(len(urls)), args.sample))
             chosen = [url for index, url in enumerate(urls) if index in picked]
-        items = snapshot_urls(chosen, args.run)
-        _write_items(args.run, items, args.seed,
-                     [{"kind": "prose"} for _ in urls])
+        try:
+            items = snapshot_urls(chosen, args.run)
+        except ValueError as error:
+            print(error)
+            return 1
+        _write_items(args.run, items, args.seed, {"prose": len(urls)})
     elif args.command == "pdf-text":
         text = pdf_text(args.path)
         if text is None:
             print("pdftotext is not installed; transcribe the PDF with the host's PDF reading instead")
             return 3
         Path(args.out).write_text(text, encoding="utf-8")
-        print(f"wrote {len(text.splitlines())} lines to {args.out}")
+        print(f"wrote {len(re.findall(r'[^\n]*\n|[^\n]+', text))} lines to {args.out}")
     elif args.command == "sections":
         text = Path(args.path).read_text(encoding="utf-8")
         starts = [int(s) for s in args.starts.split(",")]
-        items = snapshot_sections(text, starts, args.run, args.source)
-        _write_items(args.run, items, 0, items)
+        try:
+            items = snapshot_sections(text, starts, args.run, args.source)
+        except ValueError as error:
+            print(error)
+            return 1
+        _write_items(args.run, items, 0, _count_kinds(items))
     elif args.command == "set-types":
         path = Path(args.run) / "items.json"
         data = read_json(path)

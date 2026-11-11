@@ -269,8 +269,7 @@ def main(argv=None):
             for entry in entries:
                 log.write(json.dumps(entry, ensure_ascii=False) + "\n")
         print(f"rubric is now version {updated['version']}: {len(entries)} changes logged")
-        return 0
-    return 2
+    return 0
 
 
 if __name__ == "__main__":

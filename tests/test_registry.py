@@ -134,5 +134,22 @@ class HeaderFactsTests(unittest.TestCase):
         self.assertTrue(facts["coverage"]["code-comment"])
 
 
+class UrlListIdentityTests(unittest.TestCase):
+    def identity(self, text):
+        with tempfile.TemporaryDirectory() as tmp:
+            listing = Path(tmp) / "urls.txt"
+            listing.write_text(text, encoding="utf-8")
+            return reg.identify(str(listing))
+
+    def test_leading_comment_line_is_not_the_identity(self):
+        self.assertEqual(self.identity("# Acme docs\nhttps://docs.acme.example/start\n"),
+                         "docs.acme.example")
+
+    def test_lists_with_the_same_comment_and_different_hosts_differ(self):
+        first = self.identity("# Product docs\nhttps://one.example/a\n")
+        second = self.identity("# Product docs\nhttps://two.example/a\n")
+        self.assertNotEqual(first, second)
+
+
 if __name__ == "__main__":
     unittest.main()

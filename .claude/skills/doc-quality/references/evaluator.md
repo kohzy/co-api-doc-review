@@ -1,9 +1,10 @@
 # Evaluator prompt
 
-Send this to each evaluator subagent, filling the four slots. Send nothing else: no summary of the run, no other evaluator's output, no hint about which pages look weak.
+Send this to each evaluator subagent, filling the five slots. Send nothing else: no summary of the run, no other evaluator's output, no hint about which pages look weak.
 
 - `{stance}`: one of the stances below.
 - `{run_dir}`: absolute path of the run directory.
+- `{repo_root}`: absolute path of the repository that holds `rubric/`.
 - `{item_ids}`: the item ids this evaluator judges, in the order it should read them.
 - `{evaluator_name}`: the name used in its output file, such as `newcomer`.
 
@@ -28,7 +29,7 @@ Read these two files first:
 - {run_dir}/items.json — the items to judge. Each has an id, a kind (prose, pdf-section or
   code-comment), a page_type, a snapshot path, and the ids of the criteria that apply to it.
   A relative snapshot path is relative to {run_dir}.
-- rubric/rubric.json — the criteria. Each has an id, a yes/no question, and guidance.
+- {repo_root}/rubric/rubric.json — the criteria. Each has an id, a yes/no question, and guidance.
 
 Judge these items, in this order: {item_ids}
 

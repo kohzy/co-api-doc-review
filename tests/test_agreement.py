@@ -1,7 +1,13 @@
+import contextlib
+import io
+import json
+import tempfile
 import unittest
+from pathlib import Path
 
 import support  # noqa: F401
 import agreement as ag
+import registry
 
 CONFIG = {
     "thresholds_confirmed": True,
@@ -195,6 +201,98 @@ class DecideTests(unittest.TestCase):
         decision = ag.decide_held_out(summary, self.scores(), self.confirmed(summary), CONFIG)
         self.assertFalse(decision["passed"])
         self.assertTrue(any("K1" in reason and "agreement" in reason for reason in decision["reasons"]))
+
+
+class DecideEdgeTests(unittest.TestCase):
+    def scores(self, unanimous=(4, 4)):
+        return {"unanimous": {"agree": unanimous[0], "total": unanimous[1]},
+                "contested": {"agree": 0, "total": 0}}
+
+    def test_overall_agreement_below_its_threshold_blocks_the_pass_on_its_own(self):
+        # One criterion at AC1 0.79: above the per-criterion bar of 0.60, below the overall bar of 0.80.
+        summary = ag.summarise(units("K1", ["PPP", "FFF", "PPP", "FFF", "PPF", "PPP"]))
+        self.assertTrue(0.6 <= summary["criteria"]["K1"]["ac1"] < 0.8)
+        decision = ag.decide_held_out(summary, self.scores(), {"K1": True}, CONFIG)
+        self.assertFalse(decision["passed"])
+        self.assertEqual(len(decision["reasons"]), 1)
+        self.assertIn("overall agreement", decision["reasons"][0])
+
+    def test_no_scored_unanimous_spot_checks_blocks_the_pass(self):
+        summary = ag.summarise(units("K1", ["PPP", "PPP", "FFF", "PPP", "FFF"]))
+        decision = ag.decide_held_out(summary, self.scores(unanimous=(0, 0)), {"K1": True}, CONFIG)
+        self.assertFalse(decision["passed"])
+        self.assertTrue(any("no unanimous spot-check" in r for r in decision["reasons"]))
+
+
+class SpotCheckQuotaTests(unittest.TestCase):
+    def test_unanimous_quota_below_the_usability_quota_does_not_overfill_the_set(self):
+        config = dict(CONFIG, spot_check={"contested": 0, "unanimous": 2,
+                                          "unanimous_usability_passes": 3, "max_per_criterion": 2})
+        summary = ag.summarise(units("U1", ["PPP"] * 10) + units("K1", ["PPP"] * 10))
+        items, _, _ = ag.select_spot_checks(summary, RUBRIC, config, seed=1)
+        self.assertEqual(len(items), 3)
+
+    def test_units_without_a_majority_are_chosen_before_two_to_one_splits(self):
+        config = dict(CONFIG, spot_check={"contested": 1, "unanimous": 0,
+                                          "unanimous_usability_passes": 0, "max_per_criterion": 2})
+        summary = ag.summarise(units("K1", ["PPF", "PF-", "PPF"]))
+        for seed in range(5):
+            items, sealed, _ = ag.select_spot_checks(summary, RUBRIC, config, seed=seed)
+            self.assertIsNone(sealed[items[0]["id"]]["majority"])
+
+
+class HeldOutCommandTests(unittest.TestCase):
+    """The decide and record-held-out commands, run against a temporary repository root."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name)
+        self.run_dir = self.root / "runs" / "test"
+        self.run_dir.mkdir(parents=True)
+        (self.root / "rubric").mkdir()
+        summary = ag.summarise(units("K1", ["PPP", "PPP", "FFF", "PPP", "FFF"]))
+        self.write(self.run_dir / "summary.json", summary)
+        self.write(self.run_dir / "items.json", {"items": [{"id": "p001", "kind": "prose"}]})
+        self.write(self.run_dir / "user-scores.json",
+                   {"unanimous": {"agree": 4, "total": 4}, "contested": {"agree": 1, "total": 2}})
+        self.write(self.run_dir / "failures-confirmed.json", {"K1": True})
+        rubric = {"version": 3, "page_types": ["other"],
+                  "criteria": [c for c in RUBRIC["criteria"] if c["id"] == "K1"]}
+        self.write(self.root / "rubric" / "rubric.json", rubric)
+
+    def write(self, path, data):
+        path.write_text(json.dumps(data), encoding="utf-8")
+
+    def read(self, path):
+        return json.loads(path.read_text(encoding="utf-8"))
+
+    def run_command(self, module, *arguments):
+        with contextlib.redirect_stdout(io.StringIO()):
+            return module.main(["--root", str(self.root), *arguments])
+
+    def test_unconfirmed_thresholds_refuse_the_decision_and_nothing_is_recorded(self):
+        self.write(self.root / "rubric" / "config.json", dict(CONFIG, thresholds_confirmed=False))
+        self.assertEqual(self.run_command(ag, "decide", str(self.run_dir)), 1)
+        decision = self.read(self.run_dir / "decision.json")
+        self.assertTrue(decision["refused"])
+        self.assertFalse(decision["passed"])
+        recorded = self.run_command(registry, "record-held-out", "acme docs",
+                                    "--date", "2026-11-11", "--run", str(self.run_dir))
+        self.assertEqual(recorded, 1)
+        self.assertFalse((self.root / "rubric" / "held-out.json").exists())
+
+    def test_confirmed_thresholds_decide_and_record_a_pass_for_the_rubric_version(self):
+        self.write(self.root / "rubric" / "config.json", CONFIG)
+        self.assertEqual(self.run_command(ag, "decide", str(self.run_dir)), 0)
+        self.assertTrue(self.read(self.run_dir / "decision.json")["passed"])
+        recorded = self.run_command(registry, "record-held-out", "acme docs",
+                                    "--date", "2026-11-11", "--run", str(self.run_dir))
+        self.assertEqual(recorded, 0)
+        result = self.read(self.root / "rubric" / "held-out.json")["results"][0]
+        self.assertTrue(result["passed"])
+        self.assertEqual(result["version"], 3)
+        self.assertEqual(result["input_kinds"], ["prose"])
 
 
 if __name__ == "__main__":

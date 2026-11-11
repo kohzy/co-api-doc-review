@@ -11,9 +11,9 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 from rubric_store import read_json, write_json
-from verdicts import validate_run
+from verdicts import VERDICTS, validate_run
 
-CATEGORIES = ("pass", "fail")
+GROUPS = ("unanimous", "contested")
 
 
 def _ac1(vote_lists):
@@ -42,7 +42,7 @@ def _criterion_order(criterion_id):
 
 def _majority(votes):
     counts = Counter(votes)
-    for category in CATEGORIES:
+    for category in VERDICTS:
         if counts[category] >= 2:
             return category
     return None
@@ -136,7 +136,7 @@ def select_spot_checks(summary, rubric, config, seed):
     if shortfall:
         notes.append(f"only {len(chosen)} contested items were available; "
                      "the rest of the set is filled from unanimous items")
-    picked += rest[:target - len(chosen) - len(picked)]
+    picked += rest[:max(0, target - len(chosen) - len(picked))]
     chosen += [("unanimous", unit) for unit in picked]
     if len(chosen) < target:
         notes.append(f"the set has {len(chosen)} items; there were not enough verdicts for {target}")
@@ -158,12 +158,16 @@ def select_spot_checks(summary, rubric, config, seed):
     return items, sealed, notes
 
 
+def _empty_scores():
+    return {group: {"agree": 0, "total": 0} for group in GROUPS}
+
+
 def score_user(user_verdicts, sealed):
     """Count how often the user matched the evaluators' majority, per group.
 
     Items with no majority are shown to the user but not scored.
     """
-    scores = {group: {"agree": 0, "total": 0} for group in ("unanimous", "contested")}
+    scores = _empty_scores()
     for spot_id, answer in user_verdicts.items():
         entry = sealed[spot_id]
         if entry["majority"] is None:
@@ -266,6 +270,8 @@ def main(argv=None):
         summary["invalid_verdicts"] = len(invalid)
         write_json(run / "summary.json", summary)
         print(f"{len(valid)} valid verdicts, {len(invalid)} set aside as invalid")
+        for evaluator, count in sorted(Counter(e["evaluator"] for e in invalid).items()):
+            print(f"  {count} from {evaluator}")
         print(f"overall agreement (AC1): {_format(summary['overall_ac1'])}")
         for cid, c in summary["criteria"].items():
             flags = [] if c["tested"] else ["not tested"]
@@ -308,10 +314,9 @@ def main(argv=None):
         items = read_json(run / "items.json")["items"]
         confirmed_path = run / "failures-confirmed.json"
         scores_path = run / "user-scores.json"
-        no_scores = {group: {"agree": 0, "total": 0} for group in ("unanimous", "contested")}
         decision = decide_held_out(
             read_json(run / "summary.json"),
-            read_json(scores_path) if scores_path.exists() else no_scores,
+            read_json(scores_path) if scores_path.exists() else _empty_scores(),
             read_json(confirmed_path) if confirmed_path.exists() else {},
             read_json(rubric_dir / "config.json"),
             active_criteria=[c["id"] for c in rubric["criteria"] if c["status"] == "active"])

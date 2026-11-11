@@ -1,5 +1,6 @@
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 import support
@@ -122,6 +123,69 @@ class SampleTests(unittest.TestCase):
         kept = dc.cap_source_files(items, 4, seed=1)
         self.assertEqual(sum(1 for i in kept if i["kind"] == "code-comment"), 4)
         self.assertEqual(sum(1 for i in kept if i["kind"] == "prose"), 3)
+
+
+class FormFeedTests(unittest.TestCase):
+    def test_page_break_character_does_not_shift_section_starts(self):
+        text = "Title\nline two\n\x0cPage two\nbody\nHeading three\nmore\n"
+        sections = dc.slice_text(text, [1, 5])
+        self.assertTrue(sections[1].startswith("Heading three\n"))
+        self.assertEqual("".join(sections), text)
+
+
+class CommentDetectionTests(unittest.TestCase):
+    def sources(self, files):
+        with tempfile.TemporaryDirectory() as tmp:
+            for name, text in files.items():
+                (Path(tmp) / name).write_text(text, encoding="utf-8")
+            return [item["source"] for item in dc.discover(tmp)]
+
+    def test_c_file_with_only_preprocessor_lines_is_not_listed(self):
+        self.assertEqual(self.sources({"main.c": "#include <stdio.h>\nint main(){return 0;}\n"}), [])
+
+    def test_c_file_with_a_line_comment_is_listed(self):
+        self.assertEqual(self.sources({"main.c": "#include <stdio.h>\n// Entry point.\nint main(){}\n"}),
+                         ["main.c"])
+
+    def test_python_file_with_a_hash_comment_is_listed(self):
+        self.assertEqual(self.sources({"job.py": "# Runs the nightly job.\nrun()\n"}), ["job.py"])
+
+    def test_python_shebang_alone_is_not_a_comment(self):
+        self.assertEqual(self.sources({"job.py": "#!/usr/bin/env python3\nrun()\n"}), [])
+
+
+class SnapshotTests(unittest.TestCase):
+    PAGE = (support.FIXTURES / "page.html").read_text(encoding="utf-8")
+
+    def test_urls_are_saved_as_html_and_text_with_relative_snapshot_paths(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(dc, "fetch", return_value=self.PAGE):
+            items = dc.snapshot_urls(["https://docs.example.com/tutorials/install",
+                                      "https://docs.example.com/"], tmp)
+            self.assertEqual([i["snapshot"] for i in items], ["pages/p001.txt", "pages/p002.txt"])
+            self.assertEqual([i["page_type"] for i in items], ["tutorial", "landing"])
+            self.assertIn("# Install the CLI", (Path(tmp) / "pages/p001.txt").read_text(encoding="utf-8"))
+            self.assertTrue((Path(tmp) / "pages/p001.html").exists())
+
+    def test_page_with_no_text_stops_the_run_and_names_the_url(self):
+        empty = "<html><body><script>render()</script></body></html>"
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(dc, "fetch", return_value=empty):
+            with self.assertRaises(ValueError) as raised:
+                dc.snapshot_urls(["https://app.example.com/docs"], tmp)
+        self.assertIn("https://app.example.com/docs", str(raised.exception))
+
+    def test_failed_fetch_names_the_url(self):
+        failure = OSError("HTTP Error 404: Not Found")
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(dc, "fetch", side_effect=failure):
+            with self.assertRaises(ValueError) as raised:
+                dc.snapshot_urls(["https://docs.example.com/gone"], tmp)
+        self.assertIn("https://docs.example.com/gone", str(raised.exception))
+        self.assertIn("404", str(raised.exception))
+
+    def test_sections_become_pdf_section_items_with_their_own_snapshots(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            items = dc.snapshot_sections("one\ntwo\nthree\n", [1, 3], tmp, "Manual")
+            self.assertEqual([i["kind"] for i in items], ["pdf-section", "pdf-section"])
+            self.assertEqual((Path(tmp) / items[1]["snapshot"]).read_text(encoding="utf-8"), "three\n")
 
 
 if __name__ == "__main__":

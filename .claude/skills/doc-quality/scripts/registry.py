@@ -5,6 +5,7 @@ held-out test, and compute the facts a review report states in its header.
 State files: rubric/seen.json and rubric/held-out.json.
 """
 import argparse
+import copy
 import json
 import re
 import subprocess
@@ -12,6 +13,7 @@ import sys
 from pathlib import Path
 from urllib.parse import urlsplit
 
+from discover import read_url_list
 from rubric_store import INPUT_KINDS, read_json, write_json
 
 CODE_HOSTS = ("github.com", "gitlab.com", "bitbucket.org", "codeberg.org")
@@ -56,9 +58,9 @@ def identify(source):
             return identity if subpath == "." else f"{identity}/{subpath.lower()}"
         return normalise_identity(path.resolve().name)
     if path.is_file():
-        for line in path.read_text(encoding="utf-8").splitlines():
-            if line.strip():
-                return normalise_identity(line.strip())
+        urls = read_url_list(path.read_text(encoding="utf-8"))
+        if urls:
+            return normalise_identity(urls[0])
     return normalise_identity(source)
 
 
@@ -134,7 +136,7 @@ def read_changelog(path):
 
 def _load(path, empty):
     path = Path(path)
-    return read_json(path) if path.exists() else json.loads(json.dumps(empty))
+    return read_json(path) if path.exists() else copy.deepcopy(empty)
 
 
 def main(argv=None):

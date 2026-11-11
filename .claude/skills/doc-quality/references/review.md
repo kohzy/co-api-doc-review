@@ -42,7 +42,9 @@ Split the items into batches of about `review_batch_size`. For each batch, spawn
 python3 S/verdicts.py RUN
 ```
 
-This writes `RUN/valid-verdicts.json` and `RUN/invalid-verdicts.json`. Only valid verdicts go in the report. The count of invalid ones goes in the report too.
+This writes `RUN/valid-verdicts.json`, `RUN/invalid-verdicts.json` and `RUN/missing-verdicts.json`, and prints each criterion left unjudged. Only valid verdicts go in the report. The count of invalid ones goes in the report too.
+
+If anything is unjudged, an evaluator skipped it, wrote an invalid verdict for it, or failed to write its file. Spawn one more evaluator for just the affected items, named `retry1`, then run the command again. Whatever is still unjudged after that one retry is listed in the report as not judged; do not judge it yourself.
 
 ## 5. Write the report
 
@@ -52,7 +54,15 @@ Get the header facts:
 python3 S/registry.py header
 ```
 
-Write `RUN/report.md` following `report-template.md` exactly. Build it only from `RUN/items.json`, `RUN/valid-verdicts.json` and the header facts. Do not add findings of your own, soften a verdict, or leave one out.
+Write `RUN/report.md` following `report-template.md` exactly. Build it only from these sources:
+
+- `RUN/items.json`: the items, and under `found` how many of each kind were discovered;
+- `RUN/valid-verdicts.json`: the verdicts and their evidence;
+- `RUN/invalid-verdicts.json` and `RUN/missing-verdicts.json`: the counts set aside and left unjudged;
+- `rubric/rubric.json`: each criterion's question;
+- the header facts.
+
+Do not add findings of your own, soften a verdict, or leave one out.
 
 ## 6. Close
 

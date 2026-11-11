@@ -8,8 +8,9 @@ Use the JSON from `registry.py header`.
 
 - `last_passed_version` is null: write the **Untested** line.
 - Otherwise, write the **Tested** line with `last_passed_version` and `changes_since_pass`.
-- For each input kind present in this review, look it up in `coverage`. If it is false, add a **Not covered** line for it. Name the kinds for a reader: prose pages, PDF sections, docstrings and code comments.
-- If `not_tested` lists criteria that appear in this report, add the **Not exercised** line.
+- Only when a version has passed: for each input kind present in this review, look it up in `coverage`. If it is false, add a **Not covered** line for it. Name the kinds for a reader: prose pages, PDF sections, docstrings and code comments.
+- Only when a version has passed: if `not_tested` lists criteria that appear in this report, add the **Not exercised** line.
+- An untested rubric gets the **Untested** line alone.
 
 ## Template
 
@@ -38,6 +39,7 @@ Use the JSON from `registry.py header`.
 
 <One sentence if source files were sampled: "Source files were sampled; <n> of <n> were reviewed.">
 <One sentence if any verdicts were invalid: "<n> verdicts were set aside because their evidence could not be found in the page.">
+<One sentence if any criteria were left unjudged: "<n> criteria could not be judged: <item source and criterion id for each>.">
 
 ## Summary
 

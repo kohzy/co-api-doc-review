@@ -6,12 +6,10 @@ Sharpen the rubric using one public doc set. The doc set is a local folder (such
 
 ## 1. Collect and sample the pages
 
-Pick a seed for the run: any integer. Say what it is and reuse it wherever a seed is asked for.
-
 - Folder: `python3 S/discover.py folder <path> --run RUN --seed <seed> --sample <refine_sample>`
 - URL list: `python3 S/discover.py urls <file> --run RUN --seed <seed> --sample <refine_sample>`
 
-If a URL yields no text, the command stops and names it. Tell the user, and ask whether to drop that URL from the list and rerun.
+If a URL cannot be fetched or yields no text, the command stops, names the URL and exits 1. Tell the user, and ask whether to drop that URL from the list and rerun.
 
 ## 2. Fix each page's type
 
@@ -22,7 +20,7 @@ python3 S/discover.py set-types RUN p001=tutorial p002=reference
 python3 S/rubric_store.py annotate RUN/items.json
 ```
 
-Decide each type once, here. Evaluators do not get a say in which criteria apply, so that they disagree only about quality.
+Items of kind `code-comment` keep the type `other`. Decide each type once, here. Evaluators do not get a say in which criteria apply, so that they disagree only about quality.
 
 ## 3. Run three evaluators
 
@@ -36,7 +34,9 @@ If one fails to write its file, spawn it once more with the same prompt. If it f
 python3 S/agreement.py summarise RUN
 ```
 
-This checks every quote against its snapshot, sets invalid verdicts aside, and prints agreement and pass rate per criterion. Show the user that table. Say plainly how many verdicts were set aside and from which evaluator.
+This checks every quote against its snapshot, sets invalid verdicts aside, and prints agreement and pass rate per criterion, with the count of verdicts set aside per evaluator.
+
+Tell the user the overall agreement and how many verdicts were set aside, from which evaluator. **Hold the per-criterion table back until the spot-checks in step 5 are done.** A pass rate of 95% on a criterion tells the user what the evaluators thought before they have judged it themselves.
 
 ## 5. Blind spot-checks
 
@@ -48,8 +48,8 @@ This writes `RUN/spot-check-items.json`. **Do not open `RUN/spot-check-sealed.js
 
 Tell the user how many items there are and that the evaluators' verdicts stay hidden until they answer. Then, for each item in file order:
 
-1. Show the criterion's question and guidance, and the page: its source, and the snapshot text (or the relevant part, for a long page, with the path so they can open the whole thing).
-2. Ask for their verdict with the blocking question tool: pass, fail, or skip. Do not hint.
+1. Look the item id up in `RUN/items.json` for its `source` and `snapshot`; a relative snapshot path is relative to RUN. Show the criterion's question and guidance, the source, and the snapshot text (or the relevant part, for a long page, with the path so they can open the whole thing).
+2. Ask for their verdict with the blocking question tool (AskUserQuestion in Claude Code): pass, fail, or skip. Do not hint. If no interactive question tool is available, stop here: blind spot-checks need the user present.
 3. Record the answer, then reveal: `python3 S/agreement.py reveal RUN <id>`. Show them what the evaluators said.
 4. If they disagree with the evaluators, or the evaluators split, ask in one line what tipped it for them. Note the answer; it is the best evidence you will get for a rewording.
 
@@ -58,6 +58,8 @@ Write the answers to `RUN/user-verdicts.json` as `{"s01": "pass", "s02": "fail"}
 ```
 python3 S/agreement.py score RUN
 ```
+
+Now show the user the per-criterion table from step 4.
 
 ## 6. Propose rubric changes
 

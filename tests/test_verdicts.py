@@ -76,5 +76,40 @@ class ValidateFileTests(unittest.TestCase):
         self.assertIn("duplicate", invalid[0]["problem"])
 
 
+class MalformedEvidenceTests(unittest.TestCase):
+    def test_absence_record_missing_where_it_searched_is_rejected(self):
+        v = verdict(verdict="fail", evidence={"absent": {"looked_for": "prerequisites", "searched": ""}})
+        self.assertIn("searched", vd.verdict_problem(v, ITEM, SNAPSHOT))
+
+    def test_evidence_that_is_plain_text_is_rejected_not_raised(self):
+        v = verdict(evidence="the quote is You need Python 3.11 or later.")
+        self.assertIn("evidence", vd.verdict_problem(v, ITEM, SNAPSHOT))
+
+    def test_absence_record_that_is_plain_text_is_rejected_not_raised(self):
+        v = verdict(verdict="fail", evidence={"absent": "no prerequisites anywhere"})
+        self.assertIn("looked_for", vd.verdict_problem(v, ITEM, SNAPSHOT))
+
+    def test_null_quote_is_rejected_even_when_the_page_contains_the_word_none(self):
+        v = verdict(evidence={"quote": None})
+        self.assertIsNotNone(vd.verdict_problem(v, ITEM, SNAPSHOT + "None of this applies.\n"))
+
+    def test_one_malformed_verdict_does_not_stop_the_others_being_validated(self):
+        submitted = {"evaluator": "newcomer", "verdicts": [
+            "not an object", verdict(evidence={"absent": "text"}), verdict()]}
+        valid, invalid = vd.validate_verdicts(submitted, {"p001": ITEM}, {"p001": SNAPSHOT})
+        self.assertEqual(len(valid), 1)
+        self.assertEqual(len(invalid), 2)
+
+
+class MissingVerdictTests(unittest.TestCase):
+    def test_criteria_nobody_judged_are_listed(self):
+        valid = [dict(verdict(), evaluator="batch1")]
+        self.assertEqual(vd.missing_verdicts({"p001": ITEM}, valid), [("p001", "C2")])
+
+    def test_nothing_is_missing_when_every_criterion_has_a_verdict(self):
+        valid = [dict(verdict(), evaluator="b"), dict(verdict(criterion="C2"), evaluator="b")]
+        self.assertEqual(vd.missing_verdicts({"p001": ITEM}, valid), [])
+
+
 if __name__ == "__main__":
     unittest.main()
