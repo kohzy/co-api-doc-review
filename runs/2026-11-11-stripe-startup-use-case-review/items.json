@@ -1,0 +1,35 @@
+{
+  "seed": 8156,
+  "found": {
+    "prose": 1
+  },
+  "items": [
+    {
+      "id": "p001",
+      "kind": "prose",
+      "page_type": "quickstart",
+      "source": "https://docs.stripe.com/get-started/use-cases/startup",
+      "snapshot": "pages/p001.txt",
+      "criteria": [
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "C7",
+        "C9",
+        "C10",
+        "C11",
+        "C12",
+        "C13",
+        "C14",
+        "C17",
+        "C18",
+        "C19",
+        "C20",
+        "C21",
+        "C22"
+      ]
+    }
+  ],
+  "rubric_version": 1
+}

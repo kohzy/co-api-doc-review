@@ -1,0 +1,31 @@
+{
+  "seed": 4711,
+  "found": {
+    "prose": 1
+  },
+  "items": [
+    {
+      "id": "p001",
+      "kind": "prose",
+      "page_type": "reference",
+      "source": "https://docs.mangrovesystems.com/api-reference/authentication",
+      "snapshot": "pages/p001.txt",
+      "criteria": [
+        "C1",
+        "C2",
+        "C6",
+        "C7",
+        "C9",
+        "C12",
+        "C13",
+        "C14",
+        "C17",
+        "C18",
+        "C20",
+        "C21",
+        "C22"
+      ]
+    }
+  ],
+  "rubric_version": 1
+}

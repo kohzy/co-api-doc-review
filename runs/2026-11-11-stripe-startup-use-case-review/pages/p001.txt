@@ -1,0 +1,121 @@
+Skip to content
+
+Accept simple payments as a startup
+
+Create account or Sign in
+
+Search/Ask AI
+
+Create accountSign in
+
+APIs & SDKsHelp
+
+OverviewSee all products
+
+About the APIs
+
+Stripe glossary
+
+Start building
+
+Create an account
+
+Quickstarts
+
+Start developing
+
+Build with agents
+
+Use Stripe without code
+
+Migrate to Stripe
+
+Common use cases
+
+OverviewAccept simple payments as a startupSell subscriptions as a SaaS startupAccept payments in personSend invoices to collect payments
+
+United States
+
+English (United States)
+
+# Accept simple payments for a startup
+
+## Learn how to enable Stripe payments for your business without writing code.
+
+Ask about this page
+
+Copy for LLM
+
+View as Markdown
+
+Set up agent
+
+This guide describes the actions you need to take in your Stripe integration to accept one-off payments as a startup.
+
+## Create a Stripe account
+
+Before integrating with Stripe, create a Stripe account.
+
+- Create an account by entering your email address, full name, country, and creating a password.
+
+- Fill out your business profile.
+
+- In the Dashboard, click Verify your email. Stripe sends a verification email to your email address.
+
+- Verify your email address.
+
+## Create a payment link
+
+Payment Links let your customers pay you when you sell online. Create a single link that you can share with everyone.
+
+### Create a payment link
+
+- In the Dashboard, open the Payment Links page and click +New.
+
+- Select an existing product or click +Add a new product.
+
+- If you’re adding a new product, fill out the product details and click Add product.
+
+- Click Create link.
+
+## Share the payment link with your customers
+
+Use the Dashboard to copy your payment link, and share it online. Click the copy icon next to an existing link on the Payment Links page, or go to the payment link’s details page. You can share your payment link multiple times and anywhere online, including:
+
+- Emails
+
+- Text messages
+
+- Social media platforms
+
+## Go live
+
+- In the Dashboard, open your Account settings.
+
+- Enter your business type, tax details, business details, personal verification information, and customer-facing information (for example, a statement descriptor).
+
+- Add bank details to confirm where to pay out your money.
+
+- Set up two-step authentication to secure your account.
+
+- You can optionally add automatic tax collection or revenue-based climate donations.
+
+- Review the information you entered, and click Agree and submit.
+
+- After you activate your profile, Stripe updates you from sandbox mode to live mode.
+
+Learn more about setting up your Stripe account.
+
+## Next steps
+
+After setting up your integration, we recommend you implement the following features:
+
+- Customize your checkout UI with brand settings.
+
+- Create a promotion code to provide your customers with a discount.
+
+- Management fulfillment for your orders and view metrics.
+
+- Embed the payment link as a button on your website.
+
+On this page

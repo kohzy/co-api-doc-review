@@ -1,0 +1,170 @@
+[
+  {
+    "item": "p001",
+    "criterion": "C2",
+    "verdict": "pass",
+    "evidence": {
+      "quote": "This guide describes the actions you need to take in your Stripe integration to accept one-off payments as a startup."
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C3",
+    "verdict": "fail",
+    "evidence": {
+      "absent": {
+        "looked_for": "a prerequisites list or a statement that there are none (for example what business, tax or bank information to have ready, or a product to sell)",
+        "searched": "the whole page, especially the opening paragraph and the text before the first step under 'Create a Stripe account'"
+      }
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C4",
+    "verdict": "fail",
+    "evidence": {
+      "quote": "Click the copy icon next to an existing link on the Payment Links page, or go to the payment link’s details page."
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C5",
+    "verdict": "pass",
+    "evidence": {
+      "quote": "After you activate your profile, Stripe updates you from sandbox mode to live mode."
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C7",
+    "verdict": "pass",
+    "evidence": {
+      "quote": "## Share the payment link with your customers"
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C9",
+    "verdict": "fail",
+    "evidence": {
+      "quote": "In the Dashboard, click Verify your email."
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C10",
+    "verdict": "fail",
+    "evidence": {
+      "quote": "Fill out your business profile."
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C11",
+    "verdict": "fail",
+    "evidence": {
+      "quote": "Click Create link."
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C12",
+    "verdict": "pass",
+    "evidence": {
+      "absent": {
+        "looked_for": "examples made only of placeholders, examples with unclear literal versus replaceable parts, or a step that cannot be acted on without an example",
+        "searched": "the whole page; it has no code or sample values, and its only examples are a parenthetical naming a statement descriptor and a list of places to share a link, none needing replacement"
+      }
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C13",
+    "verdict": "pass",
+    "evidence": {
+      "quote": "In the Dashboard, open the Payment Links page and click +New."
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C14",
+    "verdict": "fail",
+    "evidence": {
+      "absent": {
+        "looked_for": "a symptom and remedy for any likely failure (verification email not arriving, account verification rejected, payment link not working) or a link to troubleshooting",
+        "searched": "the whole page, including the 'Go live' and 'Next steps' sections"
+      }
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C17",
+    "verdict": "fail",
+    "evidence": {
+      "quote": "Management fulfillment for your orders and view metrics."
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C18",
+    "verdict": "fail",
+    "evidence": {
+      "quote": "After you activate your profile, Stripe updates you from sandbox mode to live mode."
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C19",
+    "verdict": "fail",
+    "evidence": {
+      "quote": "You can optionally add automatic tax collection or revenue-based climate donations."
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C20",
+    "verdict": "fail",
+    "evidence": {
+      "quote": "Before integrating with Stripe, create a Stripe account."
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C21",
+    "verdict": "pass",
+    "evidence": {
+      "absent": {
+        "looked_for": "any it, this, that, they or 'the thing' with more than one possible referent or none",
+        "searched": "every sentence in the page body from the title to 'Next steps'; the only pronoun use found, 'share it online', follows 'your payment link' directly"
+      }
+    },
+    "evaluator": "batch1"
+  },
+  {
+    "item": "p001",
+    "criterion": "C22",
+    "verdict": "pass",
+    "evidence": {
+      "absent": {
+        "looked_for": "product or domain abbreviations used without expansion",
+        "searched": "the page body from the title to 'Next steps'; the only abbreviation there is 'UI', which is common for the audience (SaaS and LLM appear only in the site navigation and page toolbar)"
+      }
+    },
+    "evaluator": "batch1"
+  }
+]

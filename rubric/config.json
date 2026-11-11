@@ -1,0 +1,20 @@
+{
+  "thresholds_confirmed": false,
+  "evaluators": 3,
+  "refine_sample": 12,
+  "held_out_sample": 20,
+  "review_batch_size": 10,
+  "review_source_file_cap": 20,
+  "pdf_transcription_page_cap": 60,
+  "spot_check": {
+    "contested": 8,
+    "unanimous": 4,
+    "unanimous_usability_passes": 3,
+    "max_per_criterion": 2
+  },
+  "thresholds": {
+    "overall_ac1": 0.8,
+    "criterion_ac1": 0.6,
+    "user_agreement_unanimous": 0.85
+  }
+}
