@@ -9,6 +9,16 @@
           "run": "runs/2026-11-11-stripe-payments-refine-rubric"
         }
       ]
+    },
+    {
+      "id": "docs.isometric.com",
+      "uses": [
+        {
+          "mode": "refine-rubric",
+          "date": "2026-11-11",
+          "run": "runs/2026-11-11-isometric-certify-refine-rubric"
+        }
+      ]
     }
   ]
 }

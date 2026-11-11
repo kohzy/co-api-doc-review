@@ -1,6 +1,6 @@
 # Documentation quality rubric
 
-Version 2. Rendered from `rubric/rubric.json`; do not edit by hand.
+Version 3. Rendered from `rubric/rubric.json`; do not edit by hand.
 
 Every criterion is a yes/no question. A verdict must quote the passage that justifies it, or, when it rests on something being absent, say what was looked for and where.
 
@@ -67,7 +67,7 @@ Applies to: tutorial, how-to, quickstart; prose, pdf-section. Added in version 2
 
 ### C9. Is every term the page relies on defined, linked, or safely assumed for its stated audience?
 
-Read as someone new to this product who knows the general field. Fail when a product-specific term, acronym or concept is used without definition or link. Quote the first undefined use.
+Read as someone new to this product who knows the general field. Terms standard in that field are safely assumed, even where a newcomer to the product might not know them. Fail when a term the product or its publisher coined, or uses in its own sense, appears without definition or link. Quote the first undefined use and say why it is product-specific.
 
 Applies to: all page types; prose, pdf-section, code-comment. Added in version 1.
 
@@ -77,9 +77,9 @@ Follow the steps literally. Fail when a step says to configure, set up or update
 
 Applies to: tutorial, how-to, quickstart; prose, pdf-section. Added in version 1.
 
-### C11. Does each command or code sample come with its expected result?
+### C11. Does each step, command or code sample come with its expected result?
 
-Pass when the reader can tell whether a step worked: sample output, a described change, or a check to run. Quote a command that has no stated result, or record an absence if none do.
+Applies to steps in a user interface as well as to commands and code. Pass when the reader can tell whether each action worked: sample output, a described change on screen, or a check to run. Navigation steps whose result is self-evident (Go to the Samples tab) need none. Fail when some actions that change something state a result and others do not. Quote an action that has no stated result, or record an absence if none do.
 
 Applies to: tutorial, how-to, quickstart; prose, pdf-section. Added in version 1.
 
@@ -130,13 +130,13 @@ Applies to: all page types; prose, pdf-section, code-comment. Added in version 1
 
 ### C19. Are instructions written as direct commands to the reader?
 
-Pass on Run the installer, and on You can deactivate a link by setting active to false, which names the action and how to do it. Fail on passives (The installer should be run) and hedges (You may want to consider running). Quote the indirect instruction.
+Pass on Run the installer, and on You can deactivate a link by setting active to false, which names the action and how to do it. Fail on passives (The installer should be run) and hedges (You may want to consider running). Judge the actions the page asks the reader to perform. A recommendation or a stated limit beside the steps (We recommend checking the template first) does not fail the page on its own. Quote the indirect instruction.
 
 Applies to: tutorial, how-to, quickstart, readme; prose, pdf-section. Added in version 1.
 
 ### C20. Is the page free of sentences that could be deleted without losing information?
 
-Fail on filler: restating the heading, announcing what the next sentence will say, or history the reader does not need for the page's job. Quote the sentence.
+Fail on filler: a sentence or lead-in that only restates the heading above it (To create a project: under Create a project), announcing what the next sentence will say, or history the reader does not need for the page's job. Quote the sentence.
 
 Applies to: all page types; prose, pdf-section, code-comment. Added in version 1.
 
