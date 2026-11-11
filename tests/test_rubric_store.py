@@ -73,6 +73,18 @@ class ApplicableTests(unittest.TestCase):
         self.assertEqual(ids, ["C1", "C2"])
 
 
+class AnnotateTests(unittest.TestCase):
+    def test_items_gain_the_ids_of_their_applicable_criteria(self):
+        r = rubric(criterion("C1", page_types=("tutorial",)), criterion("C2"))
+        items = [{"id": "p001", "page_type": "reference", "kind": "prose"}]
+        self.assertEqual(rs.annotate_items(r, items)[0]["criteria"], ["C2"])
+
+    def test_item_with_a_page_type_outside_the_vocabulary_is_refused(self):
+        with self.assertRaises(ValueError):
+            rs.annotate_items(rubric(criterion("C1")),
+                              [{"id": "p001", "page_type": "blog-post", "kind": "prose"}])
+
+
 class ApplyChangesTests(unittest.TestCase):
     def setUp(self):
         self.rubric = rubric(criterion("C1"), criterion("C2"), criterion("C3"))

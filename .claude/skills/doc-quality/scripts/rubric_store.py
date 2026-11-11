@@ -206,6 +206,9 @@ def render(rubric):
 def annotate_items(rubric, items):
     """Attach to each item the ids of the criteria that apply to it."""
     for item in items:
+        if item["page_type"] not in rubric["page_types"]:
+            raise ValueError(f"{item['id']}: page type {item['page_type']} is not one of "
+                             + ", ".join(rubric["page_types"]))
         item["criteria"] = [c["id"] for c in applicable(rubric, item["page_type"], item["kind"])]
     return items
 
