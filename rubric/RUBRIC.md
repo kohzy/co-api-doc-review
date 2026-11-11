@@ -1,6 +1,6 @@
 # Documentation quality rubric
 
-Version 1. Rendered from `rubric/rubric.json`; do not edit by hand.
+Version 2. Rendered from `rubric/rubric.json`; do not edit by hand.
 
 Every criterion is a yes/no question. A verdict must quote the passage that justifies it, or, when it rests on something being absent, say what was looked for and where.
 
@@ -26,9 +26,9 @@ The Good Docs Project how-to and tutorial templates put prerequisites ahead of t
 
 Applies to: tutorial, how-to, quickstart; prose, pdf-section. Added in version 1.
 
-### C4. Are the steps numbered and in the order the reader performs them?
+### C4. Are the steps in the order the reader performs them?
 
-Fail when actions are buried in paragraphs, or a step depends on something a later step introduces. Quote the step that is out of order or the paragraph hiding an action.
+Fail when a step depends on something a later step or a later optional section introduces. Quote the step that is out of order.
 
 Applies to: tutorial, how-to, quickstart; prose, pdf-section. Added in version 1.
 
@@ -55,6 +55,12 @@ Applies to: all page types; prose, pdf-section. Added in version 1.
 The Good Docs Project README template leads with what the project does and how to start (https://www.thegooddocsproject.dev/template). Pass when both are present. Record an absence for whichever is missing.
 
 Applies to: readme; prose, pdf-section. Added in version 1.
+
+### C23. Is each action set out as its own step rather than run together in a paragraph?
+
+Pass when actions are numbered items or separately headed steps. Fail when one paragraph runs several actions together. Quote the paragraph.
+
+Applies to: tutorial, how-to, quickstart; prose, pdf-section. Added in version 2.
 
 
 ## Usability by reading
@@ -91,7 +97,7 @@ Applies to: all page types; prose, pdf-section. Added in version 1.
 
 ### C14. Does the page say what to do when something it describes commonly goes wrong?
 
-Pass when at least the likeliest failure has a stated symptom and remedy, or a link to troubleshooting. Vague advice such as check your configuration does not count. Record an absence when nothing is offered.
+Pass when at least the likeliest failure has a stated symptom and remedy, or a link to troubleshooting. Vague advice such as check your configuration does not count. A stated limit or precondition (You can't pay out until the balance meets the minimum) does not count unless the page also says what the reader will see and what to do about it. Record an absence when nothing is offered.
 
 Applies to: how-to, tutorial, quickstart, reference; prose, pdf-section. Added in version 1.
 
@@ -124,7 +130,7 @@ Applies to: all page types; prose, pdf-section, code-comment. Added in version 1
 
 ### C19. Are instructions written as direct commands to the reader?
 
-Pass on Run the installer. Fail on The installer should be run, or You may want to consider running. Quote the indirect instruction.
+Pass on Run the installer, and on You can deactivate a link by setting active to false, which names the action and how to do it. Fail on passives (The installer should be run) and hedges (You may want to consider running). Quote the indirect instruction.
 
 Applies to: tutorial, how-to, quickstart, readme; prose, pdf-section. Added in version 1.
 
@@ -136,7 +142,7 @@ Applies to: all page types; prose, pdf-section, code-comment. Added in version 1
 
 ### C21. Is it clear what every it, this, that and they refers to?
 
-Fail when a pronoun or the thing could point to more than one noun, or to nothing named. Quote the sentence.
+Fail when a reader could plausibly attach a pronoun or the thing to the wrong noun, or to nothing named. A pronoun whose only sensible referent is the subject of its own sentence, table row or entry is clear. Quote the sentence and name the two readings.
 
 Applies to: all page types; prose, pdf-section, code-comment. Added in version 1.
 

@@ -1,3 +1,14 @@
 {
-  "doc_sets": []
+  "doc_sets": [
+    {
+      "id": "docs.stripe.com",
+      "uses": [
+        {
+          "mode": "refine-rubric",
+          "date": "2026-11-11",
+          "run": "runs/2026-11-11-stripe-payments-refine-rubric"
+        }
+      ]
+    }
+  ]
 }
